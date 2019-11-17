@@ -22,6 +22,7 @@ module.exports.decrypt = (str) => {
 };
 
 module.exports.encryptIv = value => {
+  const key = crypto.scryptSync(password, 'salt', 32);
   const iv = new Buffer(crypto.randomBytes(16));
   const cipher = crypto.createCipheriv(algorithm, key, iv);
   let crypted = cipher.update(value, inputEncoding, outputEncoding);

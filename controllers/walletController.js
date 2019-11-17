@@ -144,21 +144,30 @@ exports.getWallets = async (ctx) => {
 
 
 exports.createWallet = async (ctx) => {
+  // console.log('create wallet backend', ctx);
   const users = [];
   const usersKO =[];
   if (!ctx.request.body.alias) return ctx.body = {ERROR: 'Missing alias'};
+  
   const newWallet = wallet.createWallet();
+
   let userId = await db.User.findOne(
     { where: {username:ctx.user.username},
       attributes: ['id']
     });
+    // console.log('before=====');
+    
+  const privatekey = cryptoSer.encryptIv(newWallet.privateKey);
+  // console.log('after=====');
 
   const w = await db.Wallet.create({
     publickey: newWallet.address,
-    privatekey: cryptoSer.encryptIv(newWallet.privateKey),
+    privatekey,
     wif: newWallet.privateKeyWIF,
     alias: ctx.request.body.alias
   });
+
+  
   if (!w) return ctx.body = {error: 'Error on creating the wallet'};
   let uw = await db.UserWallet.create({
     user_id: userId.dataValues.id,
@@ -186,4 +195,6 @@ exports.createWallet = async (ctx) => {
     users: users,
     usersNo: usersKO
   };
+  // console.log('users backend', users);
+  return ctx.body.publicKey;
 };

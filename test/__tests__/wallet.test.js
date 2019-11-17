@@ -15,25 +15,25 @@ describe('createWallet', () => {
   });
 });
 
-describe('getWalletBalance', () => {
-  it('Returns a number', async () => {
-    const response = await wallet.getWalletBalance(mocks.wallet1.address);
-    return expect(typeof response).toBe('number');
-  });
+// describe('getWalletBalance', () => {
+//   it('Returns a number', async () => {
+//     const response = await wallet.getWalletBalance(mocks.wallet1.address);
+//     return expect(typeof response).toBe('number');
+//   });
 
-  /** This test could start failing if the testingWallet receives a transaction. */
-  it('Returns the total number of satoshis in the wallet', async () => {
-    const response = await wallet.getWalletBalance(mocks.testingWallet.address);
-    return expect(response).toBe(21000);
-  });
+//   /** This test could start failing if the testingWallet receives a transaction. */
+//   it('Returns the total number of satoshis in the wallet', async () => {
+//     const response = await wallet.getWalletBalance(mocks.testingWallet.address);
+//     return expect(response).toBe(21000);
+//   });
 
-  it('Logs an error if argument is not a correct public addres', async () => {
-    const spy = jest.spyOn(global.console, 'error');
+//   it('Logs an error if argument is not a correct public addres', async () => {
+//     const spy = jest.spyOn(global.console, 'error');
 
-    wallet.getWalletBalance('not an addres!');
-    expect(spy).toHaveBeenCalled();
-  });
-});
+//     wallet.getWalletBalance('not an addres!');
+//     expect(spy).toHaveBeenCalled();
+//   });
+// });
 
 describe('getUTXOS', () => {
   it('Returns an array', async () => {
@@ -47,94 +47,94 @@ describe('getUTXOS', () => {
   });
 });
 
-describe('makeTransaction', () => {
-  it('Makes a transaction between two accounts and returns transaction ID', async () => {
-    const transaction = await wallet.makeTransaction(
-      mocks.wallet1.address, mocks.wallet1.privateKey,
-      mocks.wallet2.address, 10000);
+// describe('makeTransaction', () => {
+//   it('Makes a transaction between two accounts and returns transaction ID', async () => {
+//     const transaction = await wallet.makeTransaction(
+//       mocks.wallet1.address, mocks.wallet1.privateKey,
+//       mocks.wallet2.address, 10000);
 
-    expect(typeof transaction).toBe('string');
+//     expect(typeof transaction).toBe('string');
 
-    /** Looks up transaction info in an external API. This API has a limit
-    * of 5 requests/second.
-    */
-    request(`https://chain.so/api/v2/get_tx/BTCTEST/${transaction}`)
-      .then(txInfo => {
-      /** Check the if the transaction has been broadcasted */
-        setTimeout(() => {
-          expect(txInfo.body.data.inputs[0].address).toBe(mocks.wallet1.address);
-          expect(txInfo.body.data.outputs[0].value).toBe('0.00010000');
-          expect(txInfo.body.data.outputs[0].address).toBe(mocks.wallet2.address);
-        }, 2000);
-      });
-  });
+//     /** Looks up transaction info in an external API. This API has a limit
+//     * of 5 requests/second.
+//     */
+//     request(`https://chain.so/api/v2/get_tx/BTCTEST/${transaction}`)
+//       .then(txInfo => {
+//       /** Check the if the transaction has been broadcasted */
+//         setTimeout(() => {
+//           expect(txInfo.body.data.inputs[0].address).toBe(mocks.wallet1.address);
+//           expect(txInfo.body.data.outputs[0].value).toBe('0.00010000');
+//           expect(txInfo.body.data.outputs[0].address).toBe(mocks.wallet2.address);
+//         }, 2000);
+//       });
+//   });
 
-  it('Logs an error if emisor or receptor are not correct addresses', async () => {
-    const spy = jest.spyOn(global.console, 'error');
-    wallet.makeTransaction(
-      'shhh I\'m not an adress!', mocks.wallet1.privateKey,
-      'me neither...', 10000);
+//   it('Logs an error if emisor or receptor are not correct addresses', async () => {
+//     const spy = jest.spyOn(global.console, 'error');
+//     wallet.makeTransaction(
+//       'shhh I\'m not an adress!', mocks.wallet1.privateKey,
+//       'me neither...', 10000);
 
-    expect(spy).toHaveBeenCalled();
-  });
+//     expect(spy).toHaveBeenCalled();
+//   });
 
-  it('Logs an error if balance of the wallet is inferior than amount to send', async () => {
-    const spy = jest.spyOn(global.console, 'error');
-    wallet.makeTransaction(
-      mocks.emptyTestingWallet.address, mocks.emptyTestingWallet.privateKey,
-      mocks.wallet2.address, 999999999);
+//   it('Logs an error if balance of the wallet is inferior than amount to send', async () => {
+//     const spy = jest.spyOn(global.console, 'error');
+//     wallet.makeTransaction(
+//       mocks.emptyTestingWallet.address, mocks.emptyTestingWallet.privateKey,
+//       mocks.wallet2.address, 999999999);
 
-    expect(spy).toHaveBeenCalled();
-  });
+//     expect(spy).toHaveBeenCalled();
+//   });
 
-  it('Logs an error if miner fee is too small', async () => {
-    const spy = jest.spyOn(global.console, 'error');
-    wallet.makeTransaction(
-      mocks.emptyTestingWallet.address, mocks.emptyTestingWallet.privateKey,
-      mocks.wallet2.address, 10000, 1);
+//   it('Logs an error if miner fee is too small', async () => {
+//     const spy = jest.spyOn(global.console, 'error');
+//     wallet.makeTransaction(
+//       mocks.emptyTestingWallet.address, mocks.emptyTestingWallet.privateKey,
+//       mocks.wallet2.address, 10000, 1);
 
-    expect(spy).toHaveBeenCalled();
-  });
+//     expect(spy).toHaveBeenCalled();
+//   });
 
-  it('Logs an error if privateKey is not correct', async () => {
-    const spy = jest.spyOn(global.console, 'error');
-    wallet.makeTransaction(
-      mocks.emptyTestingWallet.address, 'the key to your heart',
-      mocks.wallet2.address, 10000);
+//   it('Logs an error if privateKey is not correct', async () => {
+//     const spy = jest.spyOn(global.console, 'error');
+//     wallet.makeTransaction(
+//       mocks.emptyTestingWallet.address, 'the key to your heart',
+//       mocks.wallet2.address, 10000);
 
-    expect(spy).toHaveBeenCalled();
-  });
+//     expect(spy).toHaveBeenCalled();
+//   });
 
-});
+// });
 
-describe.only('getTransactions', () => {
-  it('Returns an array', async () => {
-    const transactions = await wallet.getTransactions(mocks.testingWallet.address);
+// describe.only('getTransactions', () => {
+//   it('Returns an array', async () => {
+//     const transactions = await wallet.getTransactions(mocks.testingWallet.address);
 
-    expect(Array.isArray(transactions)).toBe(true);
-  });
+//     expect(Array.isArray(transactions)).toBe(true);
+//   });
 
-  it('Returns an array with the transactions of an address sorted by time', async () => {
-    let transactions = await wallet.getTransactions(mocks.testingWallet.address);
+//   it('Returns an array with the transactions of an address sorted by time', async () => {
+//     let transactions = await wallet.getTransactions(mocks.testingWallet.address);
 
-    //only test for transaction id, as transaction confirmations increase over time.
-    transactions = transactions.map(el => el.txid);
-    expect(transactions).toEqual(mocks.testingWalletTransactions);
-  });
-});
+//     //only test for transaction id, as transaction confirmations increase over time.
+//     transactions = transactions.map(el => el.txid);
+//     expect(transactions).toEqual(mocks.testingWalletTransactions);
+//   });
+// });
 
-describe.only('getInbTransactions', () => {
-  it('Returns an array', async () => {
-    const transactions = await wallet.getInbTransactions(mocks.testingWallet.address);
+// describe.only('getInbTransactions', () => {
+//   it('Returns an array', async () => {
+//     const transactions = await wallet.getInbTransactions(mocks.testingWallet.address);
 
-    expect(Array.isArray(transactions)).toBe(true);
-  });
+//     expect(Array.isArray(transactions)).toBe(true);
+//   });
 
-  it('Returns an array with transactions starting from a certain transaction', async () => {
-    let transactions = await wallet.getInbTransactions(mocks.testingWallet.address, mocks.testingWalletTransactions[1]);
+//   it('Returns an array with transactions starting from a certain transaction', async () => {
+//     let transactions = await wallet.getInbTransactions(mocks.testingWallet.address, mocks.testingWalletTransactions[1]);
 
-    //only test for transaction id, as transaction confirmations increase over time.
-    transactions = transactions.map(el => el.txid);
-    expect(transactions).toEqual([mocks.testingWalletTransactions[2]]);
-  });
-});
+//     //only test for transaction id, as transaction confirmations increase over time.
+//     transactions = transactions.map(el => el.txid);
+//     expect(transactions).toEqual([mocks.testingWalletTransactions[2]]);
+//   });
+// });

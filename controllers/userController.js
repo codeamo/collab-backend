@@ -3,9 +3,9 @@ const bcrypt = require('bcrypt');
 const atob = require('atob');
 
 
-const db = require( __dirname + '/../models/' );
-const filterProps = require(__dirname + '/../services/utils').filterProps;
-const mailCont = require(__dirname + '/emailController');
+const db = require('../models');
+const filterProps = require('../services/utils').filterProps;
+const mailCont = require('./emailController');
 
 
 module.exports.signIn = async (ctx) => {
@@ -45,7 +45,7 @@ exports.createUser = async (ctx, next) => {
       username: user.username,
       password: user.password,
       firstname: user.firstname,
-      lastname: user.lastnme,
+      lastname: user.lastname,
       publickey: user.public_key,
       email: user.email
     });
